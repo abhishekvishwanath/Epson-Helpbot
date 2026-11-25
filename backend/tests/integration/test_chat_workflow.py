@@ -104,3 +104,9 @@ def test_followup_is_rewritten_before_retrieval(stack):
     assert res.conversation_state.turn_count == 2
     assert len(memory.load("s7").turns) == 4
     assert memory.load("other").turns == []
+
+
+def test_failed_generation_is_not_stored_in_memory(stack):
+    wf, memory = workflow(stack, ScriptedLLM(fail=True))
+    wf.run("How do I clean the print head?", session_id="s8")
+    assert memory.load("s8").turns == []

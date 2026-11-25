@@ -1,0 +1,58 @@
+{
+  "document_id": "epson_l3310_manual",
+  "notes": "Gold evidence = PDF pages (one-based, equal to printed page numbers in this manual) + key phrases that must appear in a relevant chunk. Every phrase is verified against the PDF text on its pages by scripts/evaluate_rag.py before scoring.",
+  "questions": [
+    {"id": "q01", "category": "troubleshooting", "question": "My printer is printing blank pages. How do I fix it?", "pages": [90], "phrases": ["Comes Out as a Blank Sheet"]},
+    {"id": "q02", "category": "troubleshooting", "question": "Why are my prints coming out blurry?", "pages": [89], "phrases": ["Blurry Prints"]},
+    {"id": "q03", "category": "procedure", "question": "How do I clean the print head?", "pages": [61, 62, 63], "phrases": ["nozzle check pattern"]},
+    {"id": "q04", "category": "lights", "question": "My printer lights are flashing. What does that mean?", "pages": [19, 20, 21, 105, 106, 107], "phrases": ["paper jam has occurred", "Flashing alternately", "Flashing simultaneously"]},
+    {"id": "q05", "category": "connectivity", "question": "How do I connect my printer to my laptop?", "pages": [16, 71, 85], "phrases": ["USB"]},
+    {"id": "q06", "category": "scanning", "question": "How do I scan a document?", "pages": [55, 56], "phrases": ["Epson ScanSmart"]},
+    {"id": "q07", "category": "troubleshooting", "question": "My printer is not picking up paper.", "pages": [85, 86, 87], "phrases": ["Paper Does Not Feed Properly", "Several Sheets of Paper", "Paper Out Error"]},
+    {"id": "q08", "category": "procedure", "question": "How do I perform Power Cleaning?", "pages": [64, 65], "phrases": ["Power Cleaning"]},
+    {"id": "q09", "category": "troubleshooting", "question": "What should I do if there is a paper jam?", "pages": [107, 108, 109, 110], "phrases": ["Removing Jammed Paper", "Remove the jammed paper"]},
+    {"id": "q10", "category": "maintenance", "question": "Can I continue printing when the maintenance box is full?", "pages": [117], "phrases": ["maintenance box is full"]},
+    {"id": "q11", "category": "procedure", "question": "How do I align the print head?", "pages": [66, 67], "phrases": ["Print Head Alignment"]},
+    {"id": "q12", "category": "keyword", "question": "What is the maintenance box code?", "pages": [136], "phrases": ["C9398"]},
+    {"id": "q13", "category": "keyword", "question": "Which ink bottle code should I buy in Asia?", "pages": [136], "phrases": ["For Asia"]},
+    {"id": "q14", "category": "procedure", "question": "How do I refill the ink tanks?", "pages": [112, 113, 114, 115], "phrases": ["ink tank cap"]},
+    {"id": "q15", "category": "procedure", "question": "How do I load envelopes?", "pages": [26], "phrases": ["flap facing down"]},
+    {"id": "q16", "category": "copying", "question": "How do I make multiple copies?", "pages": [50], "phrases": ["up to 20 copies"]},
+    {"id": "q17", "category": "copying", "question": "How do I change the default copy paper size from A4 to Letter?", "pages": [18, 50, 51], "phrases": ["default paper size", "default copy size"]},
+    {"id": "q18", "category": "paper", "question": "Which papers support borderless printing?", "pages": [133, 134], "phrases": ["Borderless"]},
+    {"id": "q19", "category": "troubleshooting", "question": "My printouts are smeared with ink. What should I do?", "pages": [67, 91, 92], "phrases": ["Cleaning the Paper Path", "paper path"]},
+    {"id": "q20", "category": "procedure", "question": "How should I pack the printer for moving house?", "pages": [76, 77, 78, 79], "phrases": ["Transporting and Storing"]},
+    {"id": "q21", "category": "settings", "question": "How do I change the sleep timer so the printer stops turning itself off?", "pages": [71, 72, 121], "phrases": ["Sleep Timer", "Power Off Timer"]},
+    {"id": "q22", "category": "procedure", "question": "When should I run Power Ink Flushing?", "pages": [65], "phrases": ["Power Ink Flushing"]},
+    {"id": "q23", "category": "troubleshooting", "question": "Printing is very slow. How can I speed it up?", "pages": [121, 122], "phrases": ["Printing Is Too Slow", "Quiet Mode"]},
+    {"id": "q24", "category": "printing", "question": "Can I print several pages on one sheet?", "pages": [36], "phrases": ["Multi-Page"]},
+    {"id": "q25", "category": "printing", "question": "How do I print on both sides of the paper?", "pages": [34], "phrases": ["2-Sided Printing"]},
+    {"id": "q26", "category": "specs", "question": "What paper weight does the printer support for plain paper?", "pages": [140], "phrases": ["64 to 90"]},
+    {"id": "q27", "category": "specs", "question": "At what temperature can I store the printer?", "pages": [142], "phrases": ["-20 to 40"]},
+    {"id": "q28", "category": "scanning", "question": "How do I scan several photos at once?", "pages": [57], "phrases": ["20 mm"]},
+    {"id": "q29", "category": "keyword", "question": "All lights are on except the power light. What happened?", "pages": [21, 107], "phrases": ["recovery mode"]},
+    {"id": "q30", "category": "procedure", "question": "How do I clean the scanner glass?", "pages": [67, 68], "phrases": ["Cleaning the Scanner Glass"]},
+    {"id": "q31", "category": "lights", "question": "The ink and paper lights came on after a power cut. What should I do?", "pages": [19, 106], "phrases": ["not turned off correctly"]},
+    {"id": "q32", "category": "keyword", "question": "What is Job Arranger Lite?", "pages": [44, 45], "phrases": ["Job Arranger Lite"]},
+    {"id": "q33", "category": "keyword", "question": "How do I reset the Epson Scan 2 Utility settings?", "pages": [104], "phrases": ["Epson Scan 2 Utility"]},
+    {"id": "q34", "category": "keyword", "question": "How do I print an anti-copy pattern?", "pages": [44], "phrases": ["Anti-Copy Pattern"]}
+  ],
+  "unsupported": [
+    {"id": "u01", "question": "How do I connect the printer to Wi-Fi?"},
+    {"id": "u02", "question": "How much does the Epson L3310 cost?"},
+    {"id": "u03", "question": "How do I send a fax with this printer?"},
+    {"id": "u04", "question": "Can I print from my iPhone with AirPrint?"},
+    {"id": "u05", "question": "What is the duplex automatic printing speed in pages per minute?"},
+    {"id": "u06", "question": "How do I bake chocolate chip cookies?"},
+    {"id": "u07", "question": "Who won the last football world cup?"}
+  ],
+  "ambiguous": [
+    {"id": "a01", "question": "it doesn't work"},
+    {"id": "a02", "question": "help"}
+  ],
+  "followups": [
+    {"id": "f01", "turns": ["My prints are blurry", "How do I do the first fix?"], "expect_pages": [66, 67, 89], "expect_terms": ["align"]},
+    {"id": "f02", "turns": ["How do I clean the print head?", "What if that doesn't fix it?"], "expect_pages": [61, 62, 63, 64, 65, 128], "expect_terms": ["power", "12 hours", "flushing"]},
+    {"id": "f03", "turns": ["Paper keeps jamming in my printer", "How do I stop that from happening?"], "expect_pages": [110, 23], "expect_terms": ["prevent", "jam"]}
+  ]
+}

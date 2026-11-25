@@ -36,3 +36,8 @@ def test_marker_variants_are_normalised():
 
 def test_double_bracketed_markers_collapsed():
     assert validate_answer("From the manual[ [S1] ].", sources()).text == "From the manual[1]."
+
+
+def test_no_information_phrasings():
+    for text in ["The User's Guide does not provide a duplex speed.", "The manual doesn't list a price."]:
+        assert validate_answer(text, sources()).states_no_information

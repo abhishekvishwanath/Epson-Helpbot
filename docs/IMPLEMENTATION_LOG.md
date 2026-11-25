@@ -198,3 +198,21 @@ follow-up carries session ID; duplicate-submit guard + server error; network err
 
 Observed live: the model sometimes appends an uncited "finishing" step (e.g. "close the paper
 support" for envelopes) despite an explicit prompt rule — quantified in Phase 9.
+
+## Phase 9 — Testing and evaluation ✅
+- Gold set `backend/tests/evaluation/eval_set.json`: 34 questions (troubleshooting, procedures,
+  lights, specs, exact keywords) + 7 unsupported + 2 ambiguous + 3 follow-up conversations; every
+  key phrase is verified on its gold pages before scoring.
+- `app/evaluation/` (baseline fixed/recursive chunkers on the same page text, strategy-agnostic
+  relevance + Recall/Precision/MRR/context precision, numpy store so all strategies run through the
+  production `RetrievalService`) and `scripts/evaluate_rag.py` (`--retrieval`, `--llm`, `--followups-only`).
+- Results: structure-based Recall@5 1.00 / MRR 0.863 vs recursive 0.941 / 0.770 vs fixed 0.882 / 0.725;
+  live faithfulness 0.931, page accuracy 0.912, unsupported 7/7, ambiguous 2/2, follow-ups 3/3,
+  memory/isolation 3/3, median 2.1 s. Full report: `docs/evaluation_report.md`.
+- Bugs found by evaluation and fixed: failed (rate-limited) turns were stored in session memory and
+  duplicated on retry; the no-information detector missed "does not provide/list".
+- Tests: backend 74 + 1 live; frontend 4.
+
+## Phase 10 — Final integration ✅
+- README (setup, run, API, configuration, results, limitations, recommendations),
+  `docs/architecture.md`, evaluation report; verified clean run: ingestion CLI, uvicorn, Vite proxy.

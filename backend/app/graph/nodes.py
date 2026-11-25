@@ -220,6 +220,9 @@ class ChatNodes:
             top = state["hits"][0].chunk if state.get("hits") else None
             if state.get("response_type") == "answer" and top is not None and top.chunk_type == ChunkType.TROUBLESHOOTING:
                 convo.unresolved_issue = convo.current_topic
+        if state.get("response_type") == "error":
+            # Generation failed: the customer will retry, so don't store a turn they never got answered.
+            return {"conversation_state": prev}
         assistant = Turn("assistant", state["answer"], state.get("citations", []), state.get("response_type"))
         self.memory.record_exchange(state["session_id"], state["message"], assistant, convo)
         return {"conversation_state": convo}

@@ -18,7 +18,7 @@ from app.schemas.chat import Citation
 _MARKER_RE = re.compile(r"\[(S\d+(?:\s*,\s*S\d+)*)\]")
 _PAGE_RE = re.compile(r"\s*\(?\b(?:p\.|pp\.|page|pages)\s*(\d{1,4})\)?", re.IGNORECASE)
 _NO_INFO_RE = re.compile(
-    r"(manual (does not|doesn't|did not) (cover|include|mention|contain|describe)|"
+    r"((manual|guide) (does not|doesn't|did not) (cover|include|mention|contain|describe|provide|list|specify|give|explain)|"
     r"(couldn't|could not|can't|cannot) find|not (covered|mentioned|described) in the manual|"
     r"no information)",
     re.IGNORECASE,
