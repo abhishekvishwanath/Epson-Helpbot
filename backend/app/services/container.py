@@ -56,3 +56,11 @@ def get_retrieval_service():
     service = RetrievalService(s, corpus, DenseSearcher(get_store(), get_embedder()), reranker)
     container._retrieval_invalidate = service.invalidate
     return service
+
+
+@lru_cache
+def get_llm():
+    from app.generation.llm_client import GroqLLMClient
+
+    s = get_settings()
+    return GroqLLMClient(s) if s.llm_configured else None

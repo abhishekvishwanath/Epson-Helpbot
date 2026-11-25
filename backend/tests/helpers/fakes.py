@@ -64,3 +64,32 @@ def make_manual_pdf(path: Path, extra_sentence: str = "") -> Path:
         page.insert_text((290, 815), str(page.number + 1), fontsize=9, fontname="helv")
     doc.save(path)
     return path
+
+
+class ScriptedLLM:
+    """Fake LLMClient: JSON-mode calls return ``understanding``; others ``answer``."""
+
+    model = "scripted"
+
+    def __init__(self, understanding=None, answer="", fail=False):
+        self.understanding = understanding or (lambda msg: {"intent": "support", "is_followup": False,
+                                                           "standalone_query": msg, "topic": "", "clarification_question": ""})
+        self.answer = answer
+        self.fail = fail
+        self.calls: list[dict] = []
+
+    def complete(self, system, messages, *, max_tokens=None, temperature=None, json_mode=False, model=None):
+        import json
+
+        from app.core.exceptions import LLMError
+        from app.generation.llm_client import LLMResponse
+
+        self.calls.append({"system": system, "messages": messages, "json_mode": json_mode})
+        if json_mode:
+            content = messages[-1]["content"]
+            msg = content.rsplit("NEW CUSTOMER MESSAGE:", 1)[-1].strip()
+            return LLMResponse(text=json.dumps(self.understanding(msg)), model=self.model)
+        if self.fail:
+            raise LLMError("boom")
+        text = self.answer(messages) if callable(self.answer) else self.answer
+        return LLMResponse(text=text, model=self.model)

@@ -120,3 +120,34 @@ code-lookup chunks (maintenance box code at rank 4) — measured in Phase 9.
 
 Tests: 41 passing (RRF math, tokenizer, BM25 filter, expansion rules/budget,
 hybrid retrieval + product filter + ablations on a synthetic index).
+
+## Phase 6 — LangGraph workflow + LLM (Groq) ✅
+- `generation/llm_client.py` — provider-agnostic `LLMClient`; `GroqLLMClient` with timeouts,
+  JSON mode, own retry/failover (a 429 switches model immediately rather than sleeping).
+  Models available on the account (verified via the models API): `openai/gpt-oss-120b`
+  (answers), `qwen/qwen3.8-27b` and `openai/gpt-oss-20b` (fallbacks), `gpt-oss-20b` for
+  query understanding (separate per-model rate-limit bucket).
+- `generation/prompts.py` — grounded system prompt (sources-only, no invented sections /
+  pages / button names, `[icon]` rule, `[S#]` citations, history ≠ evidence, injection guard);
+  JSON query-understanding prompt (intent, follow-up, standalone query, topic, clarification).
+- `generation/response_validator.py` — normalises citation variants (`【S1】`, bare `S1`,
+  `[ [S1] ]`), drops unknown markers, strips page numbers not present in the evidence,
+  renumbers `[1]…`, builds structured `Citation`s from metadata (with PDF deep links).
+- `graph/` — 14 specified nodes + 3 terminal responders; conditional edges for
+  greeting/out-of-scope/ambiguous, follow-ups, no-evidence refusal, generation failure
+  (degrades to "these manual sections look relevant" with citations). Per-node timings.
+- `memory/conversation_manager.py` — memory interface + answer outline extraction so
+  "the second method" resolves even when the previous answer is truncated.
+- Retrieval refactored into `candidates` / `rerank` / `expand` stages (one per graph node).
+
+Live verification (real index + Groq): blank pages → 4 correct citations (pp. 90, 60, 61, 61);
+follow-up "How do I do the second method?" → resolved to "check and clean the print head";
+off-topic → refusal; greeting → no LLM call. Issues found live and fixed: citation format
+drift, invented button/light names in the lights table, a hallucinated "Wi-Fi section"
+suggestion, wrong follow-up resolution, and 17–35 s latency caused by Groq's 8k tokens/min
+per-model limit (context budget 6000→3500, output 1400→1000, model failover).
+
+**Deployment note:** the Groq free tier (8,000 TPM per model) supports only a few full
+answers per minute; production traffic needs a paid tier.
+
+Tests: 59 passing + 1 opt-in live test (`pytest -m live_llm`, passing).

@@ -9,9 +9,10 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Annotated
 
 from pydantic import Field, field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -28,7 +29,7 @@ class Settings(BaseSettings):
     app_name: str = "Printer Support AI"
     environment: str = Field(default="development", pattern="^(development|test|production)$")
     log_level: str = "INFO"
-    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173", "http://127.0.0.1:5173"]
     admin_api_key: str = ""
     rate_limit_per_minute: int = Field(default=30, ge=1)
     request_timeout_seconds: float = Field(default=90.0, gt=0)
@@ -37,12 +38,14 @@ class Settings(BaseSettings):
     llm_provider: str = Field(default="groq", pattern="^(groq)$")
     groq_api_key: str = ""
     groq_model: str = "openai/gpt-oss-120b"
-    groq_fallback_model: str = "llama-3.3-70b-versatile"
+    # Tried in order when the primary model is rate-limited/unavailable (each model has its own quota).
+    groq_fallback_models: Annotated[list[str], NoDecode] = ["qwen/qwen3.8-27b", "openai/gpt-oss-20b"]
+    groq_understanding_model: str = "openai/gpt-oss-20b"  # separate rate-limit bucket from answers
     llm_temperature: float = Field(default=0.1, ge=0.0, le=1.0)
-    llm_max_output_tokens: int = Field(default=1400, ge=128)
+    llm_max_output_tokens: int = Field(default=1000, ge=128)
     llm_timeout_seconds: float = Field(default=60.0, gt=0)
     llm_max_retries: int = Field(default=2, ge=0)
-    llm_context_budget_tokens: int = Field(default=6000, ge=1000)
+    llm_context_budget_tokens: int = Field(default=3500, ge=1000)
 
     # --- Embeddings / reranking -------------------------------------------
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
@@ -88,7 +91,7 @@ class Settings(BaseSettings):
     session_history_token_budget: int = Field(default=1500, ge=200)
     database_url: str = "sqlite:///./data/sessions.db"
 
-    @field_validator("cors_origins", mode="before")
+    @field_validator("cors_origins", "groq_fallback_models", mode="before")
     @classmethod
     def _split_origins(cls, value: object) -> object:
         if isinstance(value, str) and not value.strip().startswith("["):
