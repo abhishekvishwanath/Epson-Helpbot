@@ -1,0 +1,27 @@
+# Web / API
+fastapi==0.165.0
+uvicorn[standard]==0.54.0
+pydantic==2.14.4
+pydantic-settings==2.16.3
+python-multipart==0.0.34
+
+# PDF parsing + OCR
+pymupdf==2.1
+pytesseract==0.3.13
+pillow==13.0.0
+
+# RAG
+sentence-transformers==6.3.0
+chromadb==1.5.9
+rank-bm25==0.2.2
+langgraph==1.2.24
+
+# LLM provider
+groq==1.7.0
+
+# Session storage
+sqlalchemy==2.1.9
+
+# Testing
+pytest==9.2.0
+httpx==0.28.1
