@@ -46,3 +46,26 @@ A vision describer can be enabled later.
 
 Tests: 18 passing (unit: line grouping, glyph fallback, typography, segmentation, tree;
 integration: outline match, page labels, steps with icons, table rows, callouts).
+
+## Phase 3 — Hierarchical chunking ✅
+- `tokens.py` — counts with the `all-MiniLM-L6-v2` tokenizer (word-estimate fallback offline).
+- `chunker.py` — three-level hierarchy (parent section → subsection → child chunk):
+  `##` subsections kept whole under the **400-word H3 gate**, otherwise split at `###`;
+  `###` split at sub-headings above the 550-token target; deeper "problem" nodes
+  (problem → causes → **Solutions**) stay atomic up to 900 tokens. Fallback: procedure
+  group → block → sentence; tables split by row groups with headers repeated;
+  callouts/figures/cross-links attach to the preceding instruction; labels bind to what
+  follows; mid-procedure continuations carry a ~60-token overlap and a "continued" marker.
+- `metadata.py` — `Chunk` schema (hierarchy, stable SHA-1 section IDs, chunk IDs
+  `doc::section::NN`, prev/next neighbours, PDF + printed page refs, token/word counts,
+  fallback flags, content hash, figure IDs, cross-references), Chroma-safe flattening,
+  generic chunk-type classifier (no manual-specific terms).
+- `scripts/inspect_chunks.py` — stats / grep / show.
+
+Manual result: 169 chunks, 16–818 tokens (median 199), 8 fallback splits, 164 with
+printed page labels; types: 47 troubleshooting, 29 procedure, 8 warning, 5 table,
+38 reference, 41 general, 1 faq.
+
+Tests: 28 passing (6 new chunker unit tests incl. H3 gate, problem/solution cohesion,
+procedure fallback with numbering + warning attachment, table row split, stable IDs;
+4 integration tests on the manual).
