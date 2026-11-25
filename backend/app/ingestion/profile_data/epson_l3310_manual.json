@@ -1,0 +1,14 @@
+{
+  "_comment": "Glyph meanings for the manual's icon font, taken from the manual's own legends (p.8 marks and symbols, p.18 Buttons and Functions, p.19 lights). Data only; no structural rules.",
+  "symbol_fonts": ["TP.Publication.Group.Ico"],
+  "glyph_map": {
+    "O": "•",
+    "&": "→",
+    "c": "",
+    "!": "",
+    "P": "[Power button]",
+    "y": "[Stop button]",
+    "H": "[Ink light]",
+    "d": "▼"
+  }
+}
