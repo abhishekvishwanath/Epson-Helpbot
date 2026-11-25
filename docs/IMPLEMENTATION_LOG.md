@@ -177,3 +177,24 @@ on a Mac", correct steps (p. 66); session state persisted in SQLite.
 Tests: 68 passing (+9 API tests: persistent memory across requests and restart, isolation,
 unknown IDs, trimming, delete/expiry, duplicate submit, validation, rate limit, admin access,
 PDF path safety). Test DB is isolated in a temp dir.
+
+## Phase 8 — Frontend ✅
+React 19 + TypeScript + Vite + Tailwind v4 + lucide-react, customer-facing "PrintCare Support"
+page (brand placeholder, active product from `/api/documents`, welcome + 5 suggested questions).
+- `services/api.ts` — typed client, timeouts (AbortController), network/timeout/HTTP error mapping.
+- `hooks/useChat.ts` — session ID in localStorage, conversation restored from
+  `GET /api/sessions/{id}` on reload, single in-flight request (duplicate-submit guard),
+  failed-message marking + retry, "New conversation" (deletes the server session).
+- `AnswerMarkdown` — Markdown/GFM; `[n]` markers become citation chips that open the manual
+  PDF at the cited page; `[Power button]`/`[Stop button]`/`[icon]` become symbol chips;
+  "Important/Caution/Note" paragraphs and blockquotes render as amber callouts.
+- `CitationList` — numbered sources with section, document and printed page, clickable.
+- Composer (Enter to send, Shift+Enter newline, auto-grow, 2000-char cap), typing
+  indicator, error banner with retry, responsive layout, ARIA labels/live regions.
+
+Verified through the Vite dev proxy against the live backend.
+Tests: 4 Vitest tests (marker/pictogram preprocessing; suggested question → cited answer →
+follow-up carries session ID; duplicate-submit guard + server error; network error + retry).
+
+Observed live: the model sometimes appends an uncited "finishing" step (e.g. "close the paper
+support" for envelopes) despite an explicit prompt rule — quantified in Phase 9.

@@ -14,7 +14,9 @@ GROUNDING RULES (most important)
   about printers, Epson, networking, prices, or other products.
 - If the SOURCES do not contain the information needed, say plainly that the manual doesn't cover it,
   then (if useful) mention what the manual does cover that is closest. Do not guess.
-- Never invent steps, causes, error meanings, specifications, part codes or settings.
+- Never invent steps, causes, error meanings, specifications, part codes or settings. Every step you
+  give must be stated in SOURCES: do not add "obvious" connecting, preparatory or finishing steps
+  (e.g. "close the cover", "start printing") unless the manual says them.
 - Never point the customer to manual sections, pages, websites, documents or features that are not
   named in SOURCES (for example, do not suggest a "Wi-Fi setup section" unless SOURCES contain one).
 - Earlier conversation turns are only context for understanding the question; they are NOT evidence.
