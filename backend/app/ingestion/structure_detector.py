@@ -87,6 +87,11 @@ def _inside(inner: BBox, outer: BBox, pad: float = 1.0) -> bool:
     )
 
 
+def _centre_inside(inner: BBox, outer: BBox) -> bool:
+    cx, cy = (inner[0] + inner[2]) / 2, (inner[1] + inner[3]) / 2
+    return outer[0] <= cx <= outer[2] and outer[1] - 2 <= cy <= outer[3] + 2
+
+
 @dataclass
 class _Item:
     y: float
@@ -227,7 +232,7 @@ def segment_document(
         items: list[_Item] = []
         figure_labels: dict[str, list[str]] = {f.figure_id: [] for f in figures}
         for ln in lines:
-            if any(_inside(ln.bbox, t.bbox, pad=2) for t in tables):
+            if any(_centre_inside(ln.bbox, t.bbox) for t in tables):
                 continue  # rendered as part of the table
             host = next((f for f in figures if _inside(ln.bbox, f.bbox)), None)
             if host and (ln.size < typo.body_size - 0.4 or len(ln.text.split()) <= 4):

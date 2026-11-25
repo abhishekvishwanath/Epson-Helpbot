@@ -79,7 +79,7 @@ class Settings(BaseSettings):
     dense_weight: float = Field(default=1.0, ge=0)
     bm25_weight: float = Field(default=1.0, ge=0)
     rerank_candidates: int = Field(default=15, ge=1)
-    min_rerank_score: float = -6.0
+    min_rerank_score: float = -5.0  # below → off-topic; >= min+6 → high confidence
     min_dense_similarity: float = 0.25
 
     # --- Sessions ----------------------------------------------------------

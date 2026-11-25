@@ -40,3 +40,19 @@ def _index_changed() -> None:
 @lru_cache
 def get_ingestion_service() -> IngestionService:
     return IngestionService(get_settings(), get_registry(), get_store(), get_embedder(), on_index_changed=_index_changed)
+
+
+@lru_cache
+def get_retrieval_service():
+    from app.retrieval.corpus import ChunkCorpus
+    from app.retrieval.dense_search import DenseSearcher
+    from app.retrieval.reranker import CrossEncoderReranker, NullReranker
+    from app.retrieval.retrieval_service import RetrievalService
+    from app.services import container
+
+    s = get_settings()
+    corpus = ChunkCorpus(get_store(), get_registry().signature)
+    reranker = CrossEncoderReranker(s.reranker_model) if s.reranker_enabled else NullReranker()
+    service = RetrievalService(s, corpus, DenseSearcher(get_store(), get_embedder()), reranker)
+    container._retrieval_invalidate = service.invalidate
+    return service

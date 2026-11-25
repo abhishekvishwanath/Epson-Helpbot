@@ -92,3 +92,31 @@ Manual: 168 chunks / 289 windows indexed in ~30 s; unchanged re-run skipped in 0
 Tests: 33 passing (5 new ingestion integration tests on a synthetic PDF with a fake
 embedder: skip, versioned update with reuse + stale removal, delete, non-PDF rejection,
 embedding-model mismatch).
+
+## Phase 5 — Hybrid retrieval ✅
+- `corpus.py` — chunk corpus loaded from Chroma primary records; auto-refreshes when the
+  registry signature (document@version set) changes; title index for cross-references.
+- `bm25_search.py` — BM25Okapi; tokenizer keeps technical tokens (`a4`, `2-sided`,
+  `c9398`), light stemming (jammed→jam, flashing→flash, boxes→box), deepest headings boosted.
+- `dense_search.py` — Chroma best-window cosine search with product/document filters.
+- `fusion.py` — weighted RRF (`RRF_K`, `DENSE_WEIGHT`, `BM25_WEIGHT`).
+- `reranker.py` — `cross-encoder/ms-marco-MiniLM-L-6-v2`, scored over paragraph-aligned
+  ≤380-token windows (max) because the cross-encoder truncates at 512; `NullReranker`
+  when `RERANKER_ENABLED=false`.
+- `context_expansion.py` — only when needed: adjacent parts of split procedures,
+  same-subsection warnings for procedures, actionable cross-referenced sections for
+  troubleshooting hits; de-duplicated, primary hits first, within `LLM_CONTEXT_BUDGET_TOKENS`.
+- `retrieval_service.py` — candidates (20+20) → RRF → rerank top 15 → TOP_K=5 → expand;
+  confidence: rerank < −5 → none, < 1 → low, else high (dense-similarity fallback when
+  reranking is off). Ablation switches for evaluation.
+- `scripts/search_manual.py` — retrieval debugging CLI.
+
+Calibration on 16 hand-written queries: clearly off-topic queries score ≈ −11 (→ none);
+all manual questions score > 0. Warm latency ≈ 0.25–0.45 s on CPU.
+Fixed during calibration: reranker truncation hid the end of long chunks; a table row
+leaked into body text (now excluded by centre-point); reference expansion limited to
+actionable targets. Observed weakness: the MS-MARCO cross-encoder under-ranks short
+code-lookup chunks (maintenance box code at rank 4) — measured in Phase 9.
+
+Tests: 41 passing (RRF math, tokenizer, BM25 filter, expansion rules/budget,
+hybrid retrieval + product filter + ablations on a synthetic index).
