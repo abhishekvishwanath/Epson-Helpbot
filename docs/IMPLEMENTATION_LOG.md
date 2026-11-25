@@ -69,3 +69,26 @@ printed page labels; types: 47 troubleshooting, 29 procedure, 8 warning, 5 table
 Tests: 28 passing (6 new chunker unit tests incl. H3 gate, problem/solution cohesion,
 procedure fallback with numbering + warning attachment, table row split, stable IDs;
 4 integration tests on the manual).
+
+## Phase 4 — Embeddings and vector indexing ✅
+- `embedding_service.py` — `all-MiniLM-L6-v2` (normalised). The model truncates at 256
+  word-pieces, so chunks are embedded as overlapping ~230-token windows, each prefixed
+  with the heading path; dense search scores a chunk by its best window.
+- `chroma_service.py` — persistent ChromaDB (cosine HNSW). One record per window; the
+  primary window stores the full chunk text + all metadata and is the canonical chunk
+  copy (BM25 and context expansion read it, so keyword and dense search can't drift).
+  Collection metadata holds the embedding fingerprint; a mismatch raises
+  `EmbeddingMismatchError` instead of mixing vector spaces.
+- `registry.py` + `core/database.py` — SQLite (SQLAlchemy) document registry
+  (id, model, version = source-hash prefix, status, counts) and ingestion jobs.
+- `ingestion_service.py` — validate → skip if unchanged → parse → chunk → embed (reusing
+  vectors for unchanged content hashes) → upsert new version → delete stale versions →
+  mark ready → notify retrieval. Single-flight lock; failures recorded on the job.
+- `scripts/ingest_document.py` (`--force`, `--rebuild`, `--pdf … --model …` for more manuals).
+
+Manual: 168 chunks / 289 windows indexed in ~30 s; unchanged re-run skipped in 0.02 s;
+`--force` re-parses and reuses all 168 embeddings.
+
+Tests: 33 passing (5 new ingestion integration tests on a synthetic PDF with a fake
+embedder: skip, versioned update with reuse + stale removal, delete, non-PDF rejection,
+embedding-model mismatch).
