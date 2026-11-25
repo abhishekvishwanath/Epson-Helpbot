@@ -42,6 +42,7 @@ class ConversationState(BaseModel):
     last_intent: str = ""
     last_query: str = ""
     turn_count: int = 0
+    recent_questions: list[str] = Field(default_factory=list)
 
 
 class ChatRequest(BaseModel):

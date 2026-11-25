@@ -4,7 +4,7 @@ from app.core.config import REPO_ROOT, Settings
 
 
 def test_relative_paths_resolve_against_repo_root():
-    s = Settings(_env_file=None)
+    s = Settings(_env_file=None, database_url="sqlite:///./data/sessions.db")
     assert s.chroma_persist_directory == (REPO_ROOT / "data/chroma_db").resolve()
     assert s.database_url.endswith(str(REPO_ROOT / "data" / "sessions.db"))
 

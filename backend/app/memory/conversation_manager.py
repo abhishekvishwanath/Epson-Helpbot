@@ -95,3 +95,25 @@ class InMemoryConversationMemory:
         snap = self._data.setdefault(session_id, MemorySnapshot(session_id, [], ConversationState()))
         snap.turns = (snap.turns + [Turn("user", user_message), assistant])[-self.limit:]
         snap.state = state
+
+
+class SQLiteConversationMemory:
+    """Persistent memory backed by :class:`SessionStore` (survives restarts)."""
+
+    RECENT_QUESTIONS = 5
+
+    def __init__(self, store) -> None:
+        self.store = store
+
+    def load(self, session_id: str) -> MemorySnapshot:
+        session = self.store.get(session_id)
+        if session is None:
+            return MemorySnapshot(session_id, [], ConversationState())
+        turns = [Turn(m.role, m.content, m.citations, m.response_type) for m in session.messages]
+        return MemorySnapshot(session_id, turns, session.conversation_state, session.product_model)
+
+    def record_exchange(self, session_id: str, user_message: str, assistant: Turn, state: ConversationState) -> None:
+        state.recent_questions = (state.recent_questions + [user_message])[-self.RECENT_QUESTIONS:]
+        self.store.append_exchange(
+            session_id, user_message, assistant.content, assistant.citations, assistant.response_type, state
+        )

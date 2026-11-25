@@ -151,3 +151,29 @@ per-model limit (context budget 6000→3500, output 1400→1000, model failover)
 answers per minute; production traffic needs a paid tier.
 
 Tests: 59 passing + 1 opt-in live test (`pytest -m live_llm`, passing).
+
+## Phase 7 — Session memory + API ✅
+- `memory/memory_models.py`, `session_store.py` — SQLite tables `chat_sessions` /
+  `chat_messages` (cascade delete), conversation state JSON, sliding expiry
+  (`SESSION_EXPIRY_DAYS`), trimming to `SESSION_MESSAGE_LIMIT`, hourly expired-session janitor.
+- `SQLiteConversationMemory` — persistent implementation of the memory interface; tracks
+  current topic, unresolved issue, last intent/query, turn count, recent questions.
+- Access model: session IDs are random UUID4 capabilities; no listing endpoint; unknown or
+  expired IDs get a new session (never adopted).
+- `services/chat_service.py` — per-session single-flight (409 on duplicate submit), request
+  timeout (504). `api/rate_limit.py` — per-IP sliding window (429).
+- Routes: `POST /api/chat`, `POST|GET|DELETE /api/sessions[/{id}]`, `GET /api/documents`,
+  `GET /api/documents/{id}/pdf` (registered files inside RAW_DOCUMENTS_DIR only),
+  `POST /api/admin/ingest`, `POST /api/admin/documents` (PDF upload: type, size, magic
+  bytes, server-chosen path), `GET /api/admin/ingestion/status`,
+  `DELETE /api/admin/documents/{id}`, `GET /api/health`. Admin: `X-Admin-Key` when
+  `ADMIN_API_KEY` is set; otherwise only from localhost in development.
+- Startup warm-up thread loads models/index and auto-ingests the default manual if none.
+
+Live HTTP check: "Why are my prints coming out blurry?" → answer, 3 citations (pp. 89, 98, 61),
+2.6 s; follow-up "How do I do the first one on a Mac?" → rewritten to "Align the print head
+on a Mac", correct steps (p. 66); session state persisted in SQLite.
+
+Tests: 68 passing (+9 API tests: persistent memory across requests and restart, isolation,
+unknown IDs, trimming, delete/expiry, duplicate submit, validation, rate limit, admin access,
+PDF path safety). Test DB is isolated in a temp dir.

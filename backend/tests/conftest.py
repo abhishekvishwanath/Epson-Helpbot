@@ -1,6 +1,9 @@
 import os
+import tempfile
 
 os.environ.setdefault("ENVIRONMENT", "test")
+# Never touch the real session/registry database from tests.
+os.environ["DATABASE_URL"] = f"sqlite:///{tempfile.mkdtemp(prefix='psa-test-')}/test.db"
 
 import pytest  # noqa: E402
 
